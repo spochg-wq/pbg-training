@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FDFAF4">
+<title>PBG Training — Private Boston Guides</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231B1F5E'/><text x='16' y='23' text-anchor='middle' fill='white' font-family='serif' font-size='20' font-weight='bold'>B</text></svg>">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body, #root { height:100%; }
+  body { background:#FDFAF4; overflow-x:hidden; -webkit-text-size-adjust:100%; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useCallback } = React;
+
+
+const NAVY = "#1B1F5E";
+const RED = "#CC2229";
+const CREAM = "#FDFAF4";
+const PASS = 70;
+
+const T = {
+  ca: { welcome:"Benvingut",login:"Iniciar sessió",register:"Registrar-se",email:"Correu electrònic",password:"Contrasenya",name:"Nom complet",role:"Selecciona el teu rol",tourist:"Guia turístic",museum:"Guia de museu",nature:"Guia de natura",language:"Idioma",dashboard:"Inici",courses:"Cursos",certificates:"Certificats",admin:"Admin",logout:"Sortir",progress:"Progrés",score:"Puntuació",completed:"Completat",start:"Començar",modules:"mòduls",quiz:"Quiz",question:"Pregunta",of:"de",next:"Següent",prev:"Anterior",finish:"Acabar",correct:"Correcte!",incorrect:"Incorrecte",pass:"Aprovat!",fail:"No aprovat",retry:"Tornar-ho a provar",download:"Descarregar",pending:"Pendent",issued:"Emès",approve:"Aprovar",guides:"Guies",content:"Contingut",send:"Enviar",notif:"Notificacions",title:"Títol",desc:"Descripció",save:"Desar",cancel:"Cancel·lar",back:"Tornar",no_account:"No tens compte?",has_account:"Ja tens compte?",all:"Tots",search:"Cercar...",add_module:"Afegir mòdul",add_course:"Afegir curs",doc:"Document",read_doc:"Marcar com a llegit",take_quiz:"Fer quiz",need_pass:"Necessites un 70%",no_courses:"Encara no hi ha cursos.",total:"Total",no_cert:"Encara no tens certificats.",approve_all:"Aprovar tots",stats:"Estadístiques" },
+  es: { welcome:"Bienvenido",login:"Iniciar sesión",register:"Registrarse",email:"Correo electrónico",password:"Contraseña",name:"Nombre completo",role:"Selecciona tu rol",tourist:"Guía turístico",museum:"Guía de museo",nature:"Guía de naturaleza",language:"Idioma",dashboard:"Inicio",courses:"Cursos",certificates:"Certificados",admin:"Admin",logout:"Salir",progress:"Progreso",score:"Puntuación",completed:"Completado",start:"Empezar",modules:"módulos",quiz:"Quiz",question:"Pregunta",of:"de",next:"Siguiente",prev:"Anterior",finish:"Terminar",correct:"¡Correcto!",incorrect:"Incorrecto",pass:"¡Aprobado!",fail:"No aprobado",retry:"Reintentar",download:"Descargar",pending:"Pendiente",issued:"Emitido",approve:"Aprobar",guides:"Guías",content:"Contenido",send:"Enviar",notif:"Notificaciones",title:"Título",desc:"Descripción",save:"Guardar",cancel:"Cancelar",back:"Volver",no_account:"¿No tienes cuenta?",has_account:"¿Ya tienes cuenta?",all:"Todos",search:"Buscar...",add_module:"Añadir módulo",add_course:"Añadir curso",doc:"Documento",read_doc:"Marcar como leído",take_quiz:"Hacer quiz",need_pass:"Necesitas un 70%",no_courses:"Aún no hay cursos.",total:"Total",no_cert:"Aún no tienes certificados.",approve_all:"Aprobar todos",stats:"Estadísticas" },
+  en: { welcome:"Welcome",login:"Sign in",register:"Sign up",email:"Email",password:"Password",name:"Full name",role:"Select your role",tourist:"Tourist guide",museum:"Museum guide",nature:"Nature guide",language:"Language",dashboard:"Home",courses:"Courses",certificates:"Certificates",admin:"Admin",logout:"Sign out",progress:"Progress",score:"Score",completed:"Completed",start:"Start",modules:"modules",quiz:"Quiz",question:"Question",of:"of",next:"Next",prev:"Previous",finish:"Finish",correct:"Correct!",incorrect:"Incorrect",pass:"Passed!",fail:"Not passed",retry:"Try again",download:"Download",pending:"Pending",issued:"Issued",approve:"Approve",guides:"Guides",content:"Content",send:"Send",notif:"Notifications",title:"Title",desc:"Description",save:"Save",cancel:"Cancel",back:"Back",no_account:"Don't have an account?",has_account:"Already have an account?",all:"All",search:"Search...",add_module:"Add module",add_course:"Add course",doc:"Document",read_doc:"Mark as read",take_quiz:"Take quiz",need_pass:"You need 70%",no_courses:"No courses yet.",total:"Total",no_cert:"No certificates yet.",approve_all:"Approve all",stats:"Statistics" },
+  tr: { welcome:"Hoş geldin",login:"Giriş yap",register:"Kayıt ol",email:"E-posta",password:"Şifre",name:"Ad soyad",role:"Rolünü seç",tourist:"Turist rehberi",museum:"Müze rehberi",nature:"Doğa rehberi",language:"Dil",dashboard:"Ana sayfa",courses:"Kurslar",certificates:"Sertifikalar",admin:"Yönetim",logout:"Çıkış",progress:"İlerleme",score:"Puan",completed:"Tamamlandı",start:"Başla",modules:"modül",quiz:"Sınav",question:"Soru",of:"/",next:"Sonraki",prev:"Önceki",finish:"Bitir",correct:"Doğru!",incorrect:"Yanlış",pass:"Geçtin!",fail:"Geçemedin",retry:"Tekrar dene",download:"İndir",pending:"Bekleyen",issued:"Verildi",approve:"Onayla",guides:"Rehberler",content:"İçerik",send:"Gönder",notif:"Bildirimler",title:"Başlık",desc:"Açıklama",save:"Kaydet",cancel:"İptal",back:"Geri",no_account:"Hesabın yok mu?",has_account:"Zaten hesabın var mı?",all:"Tümü",search:"Ara...",add_module:"Modül ekle",add_course:"Kurs ekle",doc:"Belge",read_doc:"Okundu işaretle",take_quiz:"Sınavı yap",need_pass:"%70 gerekli",no_courses:"Henüz kurs yok.",total:"Toplam",no_cert:"Henüz sertifikan yok.",approve_all:"Tümünü onayla",stats:"İstatistikler" },
+};
+const FL = { ca:"🇦🇩", es:"🇪🇸", en:"🇺🇸", tr:"🇹🇷" };
+const LN = { ca:"Català", es:"Español", en:"English", tr:"Türkçe" };
+
+const uid = () => Math.random().toString(36).slice(2,10);
+const now = () => new Date().toISOString();
+const loc = (o,l) => { if(!o) return ""; if(typeof o==="string") return o; return o[l]||o.en||o.ca||Object.values(o)[0]||""; };
+
+function defStore() {
+  return {
+    users: [{ id:"admin1", name:"Admin", email:"admin@pbg.com", password:"admin123", role:"admin", lang:"en", created:now() }],
+    courses: [
+      { id:"c1", title:{en:"Welcome to Boston",es:"Bienvenido a Boston",ca:"Benvingut a Boston",tr:"Boston'a Hoşgeldiniz"}, desc:{en:"Introduction to Boston's history.",es:"Introducción a la historia de Boston.",ca:"Introducció a la història de Boston.",tr:"Boston tarihi giriş."}, category:"general", status:"published", created:now(), modules:[
+        { id:"m1", title:{en:"Boston History",ca:"Història de Boston",es:"Historia de Boston",tr:"Boston Tarihi"}, type:"doc", content:{en:"Boston was founded in 1630 by Puritan settlers. Key facts:\n\n• The Freedom Trail has 16 stops\n• Boston Common is the oldest US public park (1634)\n• Back Bay was literally a bay — built on filled land\n• Paul Revere's ride started from the North End\n• The Boston Tea Party: 1773, Griffin's Wharf",ca:"Boston va ser fundada el 1630. Fets clau:\n\n• El Freedom Trail té 16 parades\n• Boston Common és el parc públic més antic dels EUA (1634)\n• Back Bay era una badia — terreny guanyat al mar\n• La cavalcada de Paul Revere va començar al North End\n• El Boston Tea Party: 1773, Griffin's Wharf",es:"Boston fue fundada en 1630. Datos clave:\n\n• El Freedom Trail tiene 16 paradas\n• Boston Common es el parque público más antiguo de EE.UU. (1634)\n• Back Bay era una bahía — terreno ganado al mar\n• La cabalgata de Paul Revere empezó en el North End\n• El Boston Tea Party: 1773, Griffin's Wharf",tr:"Boston 1630'da kuruldu. Önemli bilgiler:\n\n• Freedom Trail'da 16 durak var\n• Boston Common ABD'nin en eski parkı (1634)\n• Back Bay gerçekten bir koydu — dolgu arazi\n• Paul Revere'ın atışı North End'den başladı\n• Boston Çay Partisi: 1773, Griffin's Wharf"}, order:1, duration:15 },
+        { id:"m2", title:{en:"Knowledge Check",ca:"Comprovació",es:"Comprobación",tr:"Bilgi Kontrolü"}, type:"quiz", order:2, duration:10, questions:[
+          { id:"q1", q:{en:"What year was Boston founded?",ca:"Quin any es va fundar Boston?",es:"¿En qué año se fundó Boston?",tr:"Boston hangi yılda kuruldu?"}, opts:[{text:{en:"1620",ca:"1620",es:"1620",tr:"1620"},correct:false},{text:{en:"1630",ca:"1630",es:"1630",tr:"1630"},correct:true},{text:{en:"1640",ca:"1640",es:"1640",tr:"1640"},correct:false},{text:{en:"1650",ca:"1650",es:"1650",tr:"1650"},correct:false}]},
+          { id:"q2", q:{en:"How many Freedom Trail stops?",ca:"Quantes parades del Freedom Trail?",es:"¿Cuántas paradas del Freedom Trail?",tr:"Freedom Trail'da kaç durak?"}, opts:[{text:{en:"12",ca:"12",es:"12",tr:"12"},correct:false},{text:{en:"14",ca:"14",es:"14",tr:"14"},correct:false},{text:{en:"16",ca:"16",es:"16",tr:"16"},correct:true},{text:{en:"18",ca:"18",es:"18",tr:"18"},correct:false}]},
+          { id:"q3", q:{en:"Oldest US public park?",ca:"Parc públic més antic dels EUA?",es:"¿Parque público más antiguo de EE.UU.?",tr:"ABD'nin en eski parkı?"}, opts:[{text:{en:"Central Park",ca:"Central Park",es:"Central Park",tr:"Central Park"},correct:false},{text:{en:"Boston Common",ca:"Boston Common",es:"Boston Common",tr:"Boston Common"},correct:true},{text:{en:"Prospect Park",ca:"Prospect Park",es:"Prospect Park",tr:"Prospect Park"},correct:false},{text:{en:"Hyde Park",ca:"Hyde Park",es:"Hyde Park",tr:"Hyde Park"},correct:false}]},
+        ]},
+      ]},
+      { id:"c2", title:{en:"Safety Protocols",es:"Protocolos de seguridad",ca:"Protocols de seguretat",tr:"Güvenlik Protokolleri"}, desc:{en:"Essential safety for every guide.",es:"Seguridad esencial.",ca:"Seguretat essencial.",tr:"Temel güvenlik."}, category:"safety", status:"published", created:now(), modules:[
+        { id:"m3", title:{en:"Emergency Procedures",ca:"Procediments d'emergència",es:"Procedimientos de emergencia",tr:"Acil Prosedürler"}, type:"doc", content:{en:"Safety is your #1 priority.\n\nEmergency: 911\nPBG Operations: (617) 555-0100\n\nMedical emergency:\n1. Call 911\n2. Stay with the person\n3. Notify PBG\n4. Document incident\n\nSevere weather:\n1. Move indoors\n2. Monitor alerts\n3. Contact PBG\n\nLost tourist:\n1. Headcount\n2. Call their phone\n3. Wait 10 min\n4. Contact PBG",ca:"La seguretat és prioritat #1.\n\nEmergència: 911\nPBG Operacions: (617) 555-0100\n\nEmergència mèdica:\n1. Trucar 911\n2. Quedar-se amb la persona\n3. Avisar PBG\n4. Documentar\n\nMal temps:\n1. Anar a interior\n2. Seguir alertes\n3. Contactar PBG\n\nTurista perdut:\n1. Recompte\n2. Trucar-lo\n3. Esperar 10 min\n4. Contactar PBG",es:"La seguridad es prioridad #1.\n\nEmergencia: 911\nPBG Operaciones: (617) 555-0100\n\nEmergencia médica:\n1. Llamar 911\n2. Quedarse con la persona\n3. Avisar PBG\n4. Documentar\n\nMal tiempo:\n1. Ir al interior\n2. Seguir alertas\n3. Contactar PBG\n\nTurista perdido:\n1. Recuento\n2. Llamar\n3. Esperar 10 min\n4. Contactar PBG",tr:"Güvenlik 1 numaralı önceliktir.\n\nAcil: 911\nPBG Operasyon: (617) 555-0100\n\nTıbbi acil:\n1. 911'i ara\n2. Kişinin yanında kal\n3. PBG'yi bilgilendir\n4. Belge\n\nKötü hava:\n1. İçeri gir\n2. Uyarıları takip et\n3. PBG'ye ulaş\n\nKayıp turist:\n1. Sayım yap\n2. Telefonla ara\n3. 10 dk bekle\n4. PBG'ye ulaş"}, order:1, duration:20 },
+        { id:"m4", title:{en:"Safety Quiz",ca:"Quiz seguretat",es:"Quiz seguridad",tr:"Güvenlik Sınavı"}, type:"quiz", order:2, duration:10, questions:[
+          { id:"q4", q:{en:"Emergency number?",ca:"Número d'emergència?",es:"¿Número de emergencia?",tr:"Acil numara?"}, opts:[{text:{en:"311",ca:"311",es:"311",tr:"311"},correct:false},{text:{en:"911",ca:"911",es:"911",tr:"911"},correct:true},{text:{en:"411",ca:"411",es:"411",tr:"411"},correct:false},{text:{en:"611",ca:"611",es:"611",tr:"611"},correct:false}]},
+          { id:"q5", q:{en:"First step in medical emergency?",ca:"Primer pas emergència mèdica?",es:"¿Primer paso emergencia médica?",tr:"Tıbbi acilde ilk adım?"}, opts:[{text:{en:"Call PBG",ca:"Trucar PBG",es:"Llamar PBG",tr:"PBG'yi ara"},correct:false},{text:{en:"Call 911",ca:"Trucar 911",es:"Llamar 911",tr:"911'i ara"},correct:true},{text:{en:"Continue tour",ca:"Continuar tour",es:"Continuar tour",tr:"Tura devam"},correct:false},{text:{en:"Take photo",ca:"Fer foto",es:"Hacer foto",tr:"Fotoğraf çek"},correct:false}]},
+        ]},
+      ]},
+    ],
+    progress: {},
+    certificates: [],
+    notifications: [],
+  };
+}
+
+const SK = "pbg-plat";
+
+// ─── Shared styles ──────────────────────────────────────────
+const card = { background:"#fff", borderRadius:16, border:"1px solid rgba(27,31,94,0.06)", padding:16, marginBottom:10 };
+const btn = (primary, full) => ({ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:8, padding:"14px 24px", borderRadius:14, border:"none", fontWeight:700, fontSize:15, cursor:"pointer", fontFamily:"inherit", transition:"all .15s", width:full?"100%":"auto", minHeight:48, WebkitTapHighlightColor:"transparent", ...(primary ? {background:NAVY,color:"#fff"} : {background:"rgba(27,31,94,0.06)",color:NAVY}) });
+const inp = { width:"100%", padding:"14px 16px", borderRadius:14, border:"1.5px solid rgba(27,31,94,0.12)", fontSize:16, fontFamily:"inherit", outline:"none", background:"#fff", color:NAVY, boxSizing:"border-box", minHeight:48 };
+const lbl = { display:"block", fontSize:11, fontWeight:700, color:"rgba(27,31,94,0.4)", marginBottom:6, textTransform:"uppercase", letterSpacing:1.2 };
+const h1s = { fontFamily:"'Playfair Display',Georgia,serif", fontSize:24, fontWeight:700, color:NAVY, margin:"0 0 4px" };
+const h2s = { fontFamily:"'Playfair Display',Georgia,serif", fontSize:18, fontWeight:700, color:NAVY, margin:"0 0 4px" };
+const sub = { fontSize:13, color:"rgba(27,31,94,0.4)", margin:0 };
+const badge = (bg,c) => ({ display:"inline-flex", padding:"4px 12px", borderRadius:20, fontSize:11, fontWeight:700, background:bg, color:c });
+const progBar = { height:6, borderRadius:3, background:"rgba(27,31,94,0.08)", overflow:"hidden", width:"100%" };
+const progFill = (w,c) => ({ height:"100%", borderRadius:3, background:c||NAVY, transition:"width .5s", width:w+"%" });
+
+function App() {
+  const [store, setR] = useState(null);
+  const [user, setUser] = useState(null);
+  const [pg, setPg] = useState("login");
+  const [lang, setLang] = useState("ca");
+  const [extra, setExtra] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = null;
+        { const raw=localStorage.getItem("pbg-plat"); if(raw) setR(JSON.parse(raw)); else { const d=defStore(); localStorage.setItem("pbg-plat",JSON.stringify(d)); setR(d); } }
+      } catch { try { const r=localStorage.getItem(SK); setR(r?JSON.parse(r):defStore()); } catch { setR(defStore()); } }
+    })();
+  }, []);
+
+  const setStore = useCallback((fn) => {
+    setR(prev => {
+      const next = typeof fn==="function"?fn(prev):fn;
+      
+      try{localStorage.setItem(SK,JSON.stringify(next))}catch{}
+      return next;
+    });
+  }, []);
+
+  if(!store) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",background:CREAM,fontFamily:"sans-serif",color:NAVY}}>Loading...</div>;
+
+  const t = T[lang]||T.en;
+  const isAdmin = user?.role==="admin";
+  const go = (p,e=null) => { setPg(p); setExtra(e); window.scrollTo(0,0); };
+
+  const doLogin = (em,pw) => { const u=store.users.find(u=>u.email===em&&u.password===pw); if(u){setUser(u);setLang(u.lang||"en");go("dashboard");return true;} return false; };
+  const doRegister = (nm,em,pw,rl,lg) => { if(store.users.find(u=>u.email===em)) return false; const u={id:uid(),name:nm,email:em,password:pw,role:rl,lang:lg,created:now()}; setStore(s=>({...s,users:[...s.users,u]})); setUser(u);setLang(lg);go("dashboard"); return true; };
+
+  // ─── Auth ─────────────────────────────────────────────────
+  if(!user) return (
+    <div style={{background:CREAM,minHeight:"100vh",fontFamily:"'Libre Franklin',system-ui,sans-serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:20}}>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Libre+Franklin:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+      <div style={{width:"100%",maxWidth:400}}>
+        <div style={{textAlign:"center",marginBottom:28}}>
+          <div style={{display:"inline-flex",width:52,height:52,borderRadius:14,background:NAVY,alignItems:"center",justifyContent:"center",marginBottom:10}}>
+            <span style={{fontFamily:"'Playfair Display',serif",fontSize:26,fontWeight:700,color:"#fff"}}>B</span>
+          </div>
+          <h1 style={{...h1s,fontSize:20}}>Private Boston Guides</h1>
+          <p style={sub}>{pg==="login"?t.login:t.register}</p>
+        </div>
+        <div style={{display:"flex",gap:4,justifyContent:"center",marginBottom:16,flexWrap:"wrap"}}>
+          {Object.keys(FL).map(l=><button key={l} onClick={()=>setLang(l)} style={{...btn(lang===l),padding:"8px 14px",fontSize:13,borderRadius:20,minHeight:36}}>{FL[l]}</button>)}
+        </div>
+        <div style={{...card,padding:24}}>
+          {pg==="login" ? <LoginForm t={t} onLogin={doLogin} onSwitch={()=>go("register")}/> : <RegisterForm t={t} lang={lang} onReg={doRegister} onSwitch={()=>go("login")}/>}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ─── App shell ────────────────────────────────────────────
+  const tabs = [
+    {key:"dashboard",icon:"🏠",label:t.dashboard},
+    {key:"courses",icon:"📚",label:t.courses},
+    {key:"certificates",icon:"🏆",label:t.certificates},
+    ...(isAdmin?[{key:"admin",icon:"⚙️",label:t.admin}]:[]),
+  ];
+  const activePg = pg.startsWith("course_")||pg==="quiz"?"courses":pg;
+
+  return (
+    <div style={{background:CREAM,minHeight:"100vh",fontFamily:"'Libre Franklin',system-ui,sans-serif",paddingBottom:72,color:NAVY}}>
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Libre+Franklin:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+      {/* Top bar */}
+      <div style={{position:"sticky",top:0,zIndex:20,background:"rgba(253,250,244,0.92)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",borderBottom:"1px solid rgba(27,31,94,0.06)",padding:"10px 16px",display:"flex",alignItems:"center",gap:10}}>
+        <div style={{width:30,height:30,borderRadius:8,background:NAVY,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+          <span style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontWeight:700,color:"#fff"}}>B</span>
+        </div>
+        <span style={{fontFamily:"'Playfair Display',serif",fontWeight:600,fontSize:14,color:NAVY,flex:1}}>PBG Training</span>
+        <select value={lang} onChange={e=>{setLang(e.target.value);setStore(s=>({...s,users:s.users.map(u=>u.id===user.id?{...u,lang:e.target.value}:u)}))}}
+          style={{padding:"6px 8px",borderRadius:8,border:"none",background:"rgba(27,31,94,0.04)",fontSize:13,fontFamily:"inherit",color:NAVY,minHeight:32}}>
+          {Object.keys(FL).map(l=><option key={l} value={l}>{FL[l]} {LN[l]}</option>)}
+        </select>
+        <button onClick={()=>{setUser(null);go("login")}} style={{padding:"6px 12px",borderRadius:8,border:"none",background:"rgba(204,34,41,0.06)",color:RED,fontSize:12,fontWeight:600,cursor:"pointer",minHeight:32,fontFamily:"inherit"}}>{t.logout}</button>
+      </div>
+
+      {/* Page content */}
+      <div style={{padding:"16px 16px 0"}}>
+        {pg==="dashboard" && <Dash store={store} user={user} t={t} lang={lang} go={go}/>}
+        {pg==="courses" && <Courses store={store} user={user} t={t} lang={lang} go={go}/>}
+        {pg==="course_detail" && <Detail store={store} setStore={setStore} user={user} t={t} lang={lang} go={go} cid={extra}/>}
+        {pg==="quiz" && <Quiz store={store} setStore={setStore} user={user} t={t} lang={lang} go={go} mid={extra?.mid} cid={extra?.cid}/>}
+        {pg==="certificates" && <Certs store={store} user={user} t={t} lang={lang}/>}
+        {pg==="admin" && isAdmin && <Admin store={store} setStore={setStore} t={t} lang={lang} go={go}/>}
+      </div>
+
+      {/* Bottom tab bar */}
+      <div style={{position:"fixed",bottom:0,left:0,right:0,zIndex:20,background:"#fff",borderTop:"1px solid rgba(27,31,94,0.08)",display:"flex",padding:"6px 8px",paddingBottom:"max(6px, env(safe-area-inset-bottom))"}}>
+        {tabs.map(tb=>(
+          <button key={tb.key} onClick={()=>go(tb.key)}
+            style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:"8px 4px",borderRadius:12,border:"none",background:activePg===tb.key?"rgba(27,31,94,0.06)":"transparent",cursor:"pointer",fontFamily:"inherit",WebkitTapHighlightColor:"transparent",minHeight:48}}>
+            <span style={{fontSize:20}}>{tb.icon}</span>
+            <span style={{fontSize:10,fontWeight:activePg===tb.key?700:500,color:activePg===tb.key?NAVY:"rgba(27,31,94,0.35)"}}>{tb.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ═══ Login ═══
+function LoginForm({t,onLogin,onSwitch}) {
+  const [em,setEm]=useState("");const [pw,setPw]=useState("");const [err,setErr]=useState(false);
+  return <form onSubmit={e=>{e.preventDefault();if(!onLogin(em,pw))setErr(true)}} style={{display:"flex",flexDirection:"column",gap:14}}>
+    {err&&<div style={{background:"rgba(204,34,41,0.06)",color:RED,padding:12,borderRadius:12,fontSize:13}}>Invalid email or password</div>}
+    <div><label style={lbl}>{t.email}</label><input style={inp} type="email" value={em} onChange={e=>setEm(e.target.value)} required/></div>
+    <div><label style={lbl}>{t.password}</label><input style={inp} type="password" value={pw} onChange={e=>setPw(e.target.value)} required/></div>
+    <button type="submit" style={btn(true,true)}>{t.login}</button>
+    <p style={{textAlign:"center",fontSize:13,color:"rgba(27,31,94,0.4)"}}>{t.no_account} <button type="button" onClick={onSwitch} style={{background:"none",border:"none",color:NAVY,fontWeight:700,cursor:"pointer",textDecoration:"underline",fontSize:13,fontFamily:"inherit"}}>{t.register}</button></p>
+    <p style={{textAlign:"center",fontSize:11,color:"rgba(27,31,94,0.2)"}}>Demo: admin@pbg.com / admin123</p>
+  </form>;
+}
+
+// ═══ Register ═══
+function RegisterForm({t,lang,onReg,onSwitch}) {
+  const [nm,setNm]=useState("");const [em,setEm]=useState("");const [pw,setPw]=useState("");const [rl,setRl]=useState("tourist");const [lg,setLg]=useState(lang);const [err,setErr]=useState(false);
+  const roles=[{v:"tourist",i:"🗺️"},{v:"museum",i:"🏛️"},{v:"nature",i:"🌿"}];
+  return <form onSubmit={e=>{e.preventDefault();if(!onReg(nm,em,pw,rl,lg))setErr(true)}} style={{display:"flex",flexDirection:"column",gap:14}}>
+    {err&&<div style={{background:"rgba(204,34,41,0.06)",color:RED,padding:12,borderRadius:12,fontSize:13}}>Email already exists</div>}
+    <div><label style={lbl}>{t.name}</label><input style={inp} value={nm} onChange={e=>setNm(e.target.value)} required/></div>
+    <div><label style={lbl}>{t.email}</label><input style={inp} type="email" value={em} onChange={e=>setEm(e.target.value)} required/></div>
+    <div><label style={lbl}>{t.password}</label><input style={inp} type="password" value={pw} onChange={e=>setPw(e.target.value)} required minLength={4}/></div>
+    <div><label style={lbl}>{t.role}</label><div style={{display:"flex",gap:6}}>{roles.map(r=><button key={r.v} type="button" onClick={()=>setRl(r.v)} style={{...btn(rl===r.v),flex:1,padding:"12px 6px",fontSize:12,flexDirection:"column",gap:4,borderRadius:14}}>{r.i}<span>{t[r.v]}</span></button>)}</div></div>
+    <div><label style={lbl}>{t.language}</label><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>{Object.keys(FL).map(l=><button key={l} type="button" onClick={()=>setLg(l)} style={{...btn(lg===l),padding:10,fontSize:13,borderRadius:12,minHeight:44}}>{FL[l]} {LN[l]}</button>)}</div></div>
+    <button type="submit" style={btn(true,true)}>{t.register}</button>
+    <p style={{textAlign:"center",fontSize:13,color:"rgba(27,31,94,0.4)"}}>{t.has_account} <button type="button" onClick={onSwitch} style={{background:"none",border:"none",color:NAVY,fontWeight:700,cursor:"pointer",textDecoration:"underline",fontSize:13,fontFamily:"inherit"}}>{t.login}</button></p>
+  </form>;
+}
+
+// ═══ Dashboard ═══
+function Dash({store,user,t,lang,go}) {
+  const courses=store.courses.filter(c=>c.status==="published");
+  const myP=Object.entries(store.progress).filter(([k])=>k.startsWith(user.id+"-"));
+  const done=myP.filter(([,v])=>v.completed).length;
+  const total=courses.reduce((a,c)=>a+(c.modules?.length||0),0);
+  const pct=total>0?Math.round(done/total*100):0;
+  const certs=store.certificates.filter(c=>c.userId===user.id&&c.status==="issued").length;
+
+  return <div>
+    {/* Welcome card */}
+    <div style={{background:NAVY,borderRadius:20,padding:"22px 20px",marginBottom:16,position:"relative",overflow:"hidden"}}>
+      <div style={{position:"absolute",right:-20,top:-20,width:120,height:120,borderRadius:"50%",background:"rgba(255,255,255,0.04)"}}/>
+      <h1 style={{...h1s,color:"#fff",fontSize:20}}>{t.welcome}, {user.name.split(" ")[0]}!</h1>
+      <p style={{...sub,color:"rgba(255,255,255,0.4)",marginTop:4}}>{t.progress}: {pct}%</p>
+      <div style={{...progBar,marginTop:10,background:"rgba(255,255,255,0.1)"}}><div style={progFill(pct,RED)}/></div>
+    </div>
+    {/* Stats */}
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
+      {[{l:t.courses,v:courses.length,i:"📚"},{l:t.completed,v:done+"/"+total,i:"✅"},{l:t.progress,v:pct+"%",i:"📈"},{l:t.certificates,v:certs,i:"🏆"}].map((s,i)=>(
+        <div key={i} style={card}><div style={{fontSize:22}}>{s.i}</div><div style={{fontSize:10,textTransform:"uppercase",letterSpacing:1,color:"rgba(27,31,94,0.3)",fontWeight:700,marginTop:2}}>{s.l}</div><div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,color:NAVY}}>{s.v}</div></div>
+      ))}
+    </div>
+    {/* Courses */}
+    <h2 style={h2s}>{t.courses}</h2>
+    {courses.length===0&&<p style={{...sub,padding:30,textAlign:"center"}}>{t.no_courses}</p>}
+    {courses.map(c=>{
+      const mods=c.modules||[];const d=mods.filter(m=>store.progress[user.id+"-"+m.id]?.completed).length;const p=mods.length>0?Math.round(d/mods.length*100):0;
+      return <div key={c.id} style={{...card,cursor:"pointer"}} onClick={()=>go("course_detail",c.id)}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"start"}}>
+          <div style={{flex:1,minWidth:0}}><span style={badge("rgba(27,31,94,0.06)",NAVY)}>{c.category}</span><h3 style={{...h2s,fontSize:15,marginTop:6}}>{loc(c.title,lang)}</h3><p style={{...sub,marginTop:2}}>{mods.length} {t.modules}</p></div>
+          <span style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700,color:p===100?"#2e7d32":NAVY,flexShrink:0,marginLeft:8}}>{p}%</span>
+        </div>
+        <div style={{...progBar,marginTop:10}}><div style={progFill(p)}/></div>
+      </div>;
+    })}
+  </div>;
+}
+
+// ═══ Courses list ═══
+function Courses({store,user,t,lang,go}) {
+  const [q,setQ]=useState("");const [cat,setCat]=useState("all");
+  const all=store.courses.filter(c=>c.status==="published");
+  const cats=["all",...new Set(all.map(c=>c.category))];
+  const f=all.filter(c=>(cat==="all"||c.category===cat)&&(!q||loc(c.title,lang).toLowerCase().includes(q.toLowerCase())));
+  return <div>
+    <h1 style={h1s}>{t.courses}</h1><p style={sub}>{f.length} {t.courses.toLowerCase()}</p>
+    <input value={q} onChange={e=>setQ(e.target.value)} placeholder={"🔍 "+t.search} style={{...inp,marginTop:12,marginBottom:8}}/>
+    <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,WebkitOverflowScrolling:"touch"}}>
+      {cats.map(c=><button key={c} onClick={()=>setCat(c)} style={{...btn(cat===c),padding:"8px 16px",fontSize:13,borderRadius:20,whiteSpace:"nowrap",minHeight:36,flexShrink:0}}>{c==="all"?t.all:c}</button>)}
+    </div>
+    {f.map(c=>{const mods=c.modules||[];const d=mods.filter(m=>store.progress[user.id+"-"+m.id]?.completed).length;const p=mods.length>0?Math.round(d/mods.length*100):0;
+      return <div key={c.id} style={{...card,cursor:"pointer"}} onClick={()=>go("course_detail",c.id)}>
+        <span style={badge("rgba(27,31,94,0.06)",NAVY)}>{c.category}</span>
+        <h3 style={{...h2s,fontSize:15,marginTop:6}}>{loc(c.title,lang)}</h3>
+        <p style={{...sub,marginTop:2}}>{loc(c.desc,lang)}</p>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginTop:10}}><div style={{...progBar,flex:1}}><div style={progFill(p)}/></div><span style={{fontSize:12,fontWeight:700,color:NAVY}}>{p}%</span></div>
+      </div>;
+    })}
+  </div>;
+}
+
+// ═══ Course detail ═══
+function Detail({store,setStore,user,t,lang,go,cid}) {
+  const c=store.courses.find(c=>c.id===cid);const [ai,setAi]=useState(0);
+  if(!c) return <p>Not found</p>;
+  const mods=(c.modules||[]).sort((a,b)=>a.order-b.order);const m=mods[ai];
+
+  return <div>
+    <button onClick={()=>go("courses")} style={{background:"none",border:"none",color:"rgba(27,31,94,0.4)",fontSize:14,cursor:"pointer",padding:"8px 0",fontFamily:"inherit",fontWeight:600,minHeight:44}}>← {t.back}</button>
+    <h1 style={{...h1s,fontSize:20}}>{loc(c.title,lang)}</h1>
+    <p style={{...sub,marginBottom:14}}>{loc(c.desc,lang)}</p>
+    {/* Module tabs - horizontal scroll */}
+    <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:10,WebkitOverflowScrolling:"touch",marginBottom:4}}>
+      {mods.map((mm,i)=>{
+        const d=store.progress[user.id+"-"+mm.id]?.completed;
+        return <button key={mm.id} onClick={()=>setAi(i)} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",borderRadius:12,border:"none",background:i===ai?NAVY:"rgba(27,31,94,0.04)",color:i===ai?"#fff":NAVY,cursor:"pointer",whiteSpace:"nowrap",fontSize:13,fontWeight:i===ai?700:500,fontFamily:"inherit",minHeight:44,flexShrink:0,WebkitTapHighlightColor:"transparent"}}>
+          <span style={{width:24,height:24,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,background:d?"#e8f5e9":i===ai?"rgba(255,255,255,0.15)":"rgba(27,31,94,0.06)",color:d?"#2e7d32":i===ai?"#fff":"rgba(27,31,94,0.3)"}}>{d?"✓":i+1}</span>
+          {loc(mm.title,lang)}
+          <span style={{opacity:.5,fontSize:11}}>{mm.type==="quiz"?"📝":"📄"}</span>
+        </button>;
+      })}
+    </div>
+    {/* Content */}
+    {m?.type==="doc"&&<div style={card}>
+      <h2 style={h2s}>{loc(m.title,lang)}</h2>
+      <div style={{marginTop:12,fontSize:15,lineHeight:1.8,color:"rgba(27,31,94,0.65)",whiteSpace:"pre-wrap"}}>{loc(m.content,lang)}</div>
+      {!store.progress[user.id+"-"+m.id]?.completed&&<button onClick={()=>setStore(s=>({...s,progress:{...s.progress,[user.id+"-"+m.id]:{completed:true,date:now()}}}))} style={{...btn(true,true),marginTop:16}}>✓ {t.read_doc}</button>}
+      {store.progress[user.id+"-"+m.id]?.completed&&<div style={{marginTop:12,...badge("#e8f5e9","#2e7d32"),fontSize:14,padding:"8px 16px"}}>✓ {t.completed}</div>}
+    </div>}
+    {m?.type==="quiz"&&<div style={{...card,textAlign:"center",padding:32}}>
+      <div style={{fontSize:48,marginBottom:8}}>📝</div>
+      <h2 style={h2s}>{t.quiz}</h2>
+      <p style={{...sub,marginTop:6}}>{(m.questions||[]).length} {t.question.toLowerCase()}s · {t.need_pass}</p>
+      {store.progress[user.id+"-"+m.id]?.completed&&<div style={{...badge("#e8f5e9","#2e7d32"),fontSize:14,padding:"8px 16px",marginTop:12}}>✓ {t.score}: {store.progress[user.id+"-"+m.id].score}%</div>}
+      <button onClick={()=>go("quiz",{mid:m.id,cid})} style={{...btn(true,true),marginTop:16,fontSize:16}}>
+        {store.progress[user.id+"-"+m.id]?.completed?t.retry:t.take_quiz}
+      </button>
+    </div>}
+  </div>;
+}
+
+// ═══ Quiz ═══
+function Quiz({store,setStore,user,t,lang,go,mid,cid}) {
+  const c=store.courses.find(c=>c.id===cid);const m=c?.modules?.find(m=>m.id===mid);const qs=m?.questions||[];
+  const [ix,setIx]=useState(0);const [ans,setAns]=useState({});const [fb,setFb]=useState(false);const [fin,setFin]=useState(false);const [tm,setTm]=useState(qs.length*45);
+
+  useEffect(()=>{if(fin||!qs.length)return;const iv=setInterval(()=>setTm(t=>{if(t<=1){clearInterval(iv);doFinish();return 0;}return t-1;}),1000);return()=>clearInterval(iv);},[fin,qs.length]);
+
+  if(!m||!qs.length) return <p>No quiz</p>;
+  const q=qs[ix];const sel=ans[ix];const allA=Object.keys(ans).length===qs.length;
+
+  const doSel=(oi)=>{if(fb)return;setAns(a=>({...a,[ix]:{oi,ok:q.opts[oi]?.correct}}));setFb(true);};
+  const doNext=()=>{setFb(false);if(ix<qs.length-1)setIx(ix+1);};
+  const doFinish=()=>{
+    const tot=qs.length;const ok=Object.values(ans).filter(a=>a.ok).length;const sc=Math.round(ok/tot*100);const pass=sc>=PASS;
+    const k=user.id+"-"+mid;
+    setStore(s=>{
+      const n={...s,progress:{...s.progress,[k]:{completed:pass,score:sc,date:now()}}};
+      if(pass){const ex=s.certificates.find(c=>c.userId===user.id&&c.courseId===cid);
+        if(!ex){const ci="BPG-"+new Date().getFullYear()+"-"+String(Math.floor(Math.random()*99999)).padStart(5,"0");n.certificates=[...(s.certificates||[]),{id:uid(),userId:user.id,courseId:cid,certId:ci,score:sc,status:"pending",date:now()}];}
+        else if(sc>ex.score) n.certificates=s.certificates.map(c=>c.id===ex.id?{...c,score:sc}:c);
+      }return n;
+    });setFin(true);
+  };
+
+  if(fin){
+    const tot=qs.length;const ok=Object.values(ans).filter(a=>a.ok).length;const sc=Math.round(ok/tot*100);const pass=sc>=PASS;
+    return <div style={{textAlign:"center",padding:"20px 0"}}>
+      <div style={{...card,padding:32}}>
+        <div style={{fontSize:56}}>{pass?"🎉":"😔"}</div>
+        <h1 style={{...h1s,color:pass?"#2e7d32":RED,marginTop:8}}>{pass?t.pass:t.fail}</h1>
+        <div style={{fontFamily:"'Playfair Display',serif",fontSize:48,fontWeight:700,color:pass?"#2e7d32":RED,margin:"8px 0"}}>{sc}%</div>
+        <p style={sub}>{ok}/{tot} · {t.need_pass}</p>
+        <div style={{display:"flex",gap:4,justifyContent:"center",margin:"14px 0",flexWrap:"wrap"}}>
+          {qs.map((_,i)=><div key={i} style={{width:30,height:30,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,background:ans[i]?.ok?"#e8f5e9":"#fde8e9",color:ans[i]?.ok?"#2e7d32":RED}}>{ans[i]?.ok?"✓":"✗"}</div>)}
+        </div>
+        <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap",marginTop:16}}>
+          {!pass&&<button onClick={()=>{setIx(0);setAns({});setFb(false);setFin(false);setTm(qs.length*45)}} style={btn(false)}>{t.retry}</button>}
+          <button onClick={()=>go("course_detail",cid)} style={btn(true)}>{t.back}</button>
+          {pass&&<button onClick={()=>go("certificates")} style={{...btn(false),background:"#e8f5e9",color:"#2e7d32"}}>🏆 {t.certificates}</button>}
+        </div>
+      </div>
+    </div>;
+  }
+
+  const mm=Math.floor(tm/60);const ss=tm%60;
+  return <div style={{maxWidth:600,margin:"0 auto"}}>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+      <span style={{fontSize:13,color:"rgba(27,31,94,0.4)"}}>{t.question} {ix+1} {t.of} {qs.length}</span>
+      <span style={{...badge(tm<30?"rgba(204,34,41,0.1)":"rgba(27,31,94,0.06)",tm<30?RED:NAVY),fontVariantNumeric:"tabular-nums",fontSize:13}}>⏱ {String(mm).padStart(2,"0")}:{String(ss).padStart(2,"0")}</span>
+    </div>
+    <div style={progBar}><div style={progFill((ix+1)/qs.length*100)}/></div>
+    {/* Dots */}
+    <div style={{display:"flex",gap:5,margin:"10px 0",flexWrap:"wrap"}}>
+      {qs.map((_,i)=><button key={i} onClick={()=>{if(ans[i]!==undefined){setFb(true);setIx(i);}}} style={{width:32,height:32,borderRadius:8,border:"none",fontSize:12,fontWeight:700,fontFamily:"inherit",cursor:ans[i]!==undefined?"pointer":"default",background:i===ix?NAVY:ans[i]?.ok===true?"#e8f5e9":ans[i]?.ok===false?"#fde8e9":"rgba(27,31,94,0.06)",color:i===ix?"#fff":ans[i]?.ok===true?"#2e7d32":ans[i]?.ok===false?RED:"rgba(27,31,94,0.3)",minHeight:32}}>{i+1}</button>)}
+    </div>
+    {/* Question */}
+    <div style={{...card,padding:20}}>
+      <h2 style={{...h2s,fontSize:16,marginBottom:14}}>{loc(q.q,lang)}</h2>
+      <div style={{display:"flex",flexDirection:"column",gap:8}}>
+        {q.opts.map((o,oi)=>{
+          const isSel=sel?.oi===oi;const isOk=o.correct;
+          let bg="rgba(27,31,94,0.03)",bdr="2px solid rgba(27,31,94,0.08)",clr=NAVY;
+          if(fb&&isOk){bg="#e8f5e9";bdr="2px solid #2e7d32";clr="#2e7d32";}
+          else if(fb&&isSel&&!isOk){bg="#fde8e9";bdr="2px solid "+RED;clr=RED;}
+          else if(isSel){bg="rgba(27,31,94,0.06)";bdr="2px solid "+NAVY;}
+          return <button key={oi} onClick={()=>doSel(oi)} disabled={fb}
+            style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",borderRadius:14,border:bdr,background:bg,color:clr,cursor:fb?"default":"pointer",textAlign:"left",fontSize:15,fontFamily:"inherit",minHeight:52,WebkitTapHighlightColor:"transparent"}}>
+            <span style={{width:32,height:32,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:14,flexShrink:0,
+              background:fb&&isOk?"#2e7d32":fb&&isSel?RED:isSel?NAVY:"rgba(27,31,94,0.06)",
+              color:(fb&&(isOk||isSel))||isSel?"#fff":"rgba(27,31,94,0.3)"}}>
+              {fb&&isOk?"✓":fb&&isSel&&!isOk?"✗":String.fromCharCode(65+oi)}
+            </span>
+            <span style={{flex:1}}>{loc(o.text,lang)}</span>
+          </button>;
+        })}
+      </div>
+      {fb&&<div style={{marginTop:12,padding:"12px 16px",borderRadius:12,background:sel?.ok?"#e8f5e9":"#fde8e9",color:sel?.ok?"#2e7d32":RED,fontSize:15,fontWeight:700}}>{sel?.ok?"✓ "+t.correct:"✗ "+t.incorrect}</div>}
+    </div>
+    {/* Nav */}
+    <div style={{display:"flex",justifyContent:"space-between",marginTop:12,gap:8}}>
+      <button onClick={()=>{setFb(ans[ix-1]!==undefined);setIx(Math.max(0,ix-1))}} disabled={ix===0} style={{...btn(false),flex:1,opacity:ix===0?.3:1}}>← {t.prev}</button>
+      {ix<qs.length-1?<button onClick={doNext} disabled={!fb} style={{...btn(true),flex:1,opacity:!fb?.3:1}}>{t.next} →</button>
+      :<button onClick={doFinish} disabled={!allA} style={{...btn(true),flex:1,background:RED,opacity:!allA?.3:1}}>{t.finish}</button>}
+    </div>
+  </div>;
+}
+
+// ═══ Certificates ═══
+function Certs({store,user,t,lang}) {
+  const my=store.certificates.filter(c=>c.userId===user.id);
+  const dl=(cert)=>{
+    const c=store.courses.find(c=>c.id===cert.courseId);const cn=loc(c?.title,lang);
+    const h=`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><title>${cert.certId}</title><style>@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;600&display=swap');*{margin:0;padding:0;box-sizing:border-box}@page{size:A4 landscape;margin:0}@media print{.np{display:none!important}}body{font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;padding:16px;background:#f5f5f5}.cert{width:100%;max-width:297mm;aspect-ratio:297/210;background:#fff;position:relative;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.1)}.fr{position:absolute;inset:8mm;border:2px solid ${NAVY}}.fr:after{content:'';position:absolute;inset:3mm;border:.5px solid ${NAVY};opacity:.2}.ct{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:12mm}.lg{width:48px;height:48px;background:${NAVY};border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:4mm}.lg span{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#fff}.og{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:${NAVY};font-weight:600;margin-bottom:6mm}.tt{font-family:'Playfair Display',serif;font-size:min(32px,5vw);font-weight:700;color:${NAVY};margin-bottom:3mm}.sb{font-size:13px;color:#666;margin-bottom:8mm}.nm{font-family:'Playfair Display',serif;font-size:min(28px,4.5vw);font-weight:600;color:${NAVY};border-bottom:2px solid ${RED};padding-bottom:2mm;margin-bottom:6mm;min-width:40%}.cn{font-size:16px;font-weight:600;color:${NAVY};margin-bottom:2mm}.sc{display:inline-flex;background:${NAVY};color:#fff;padding:5px 18px;border-radius:20px;font-size:13px;font-weight:600;margin:4mm 0}.mt{font-size:11px;color:#aaa;letter-spacing:1px}.sl{width:44px;height:44px;border:2.5px solid ${RED};border-radius:50%;display:flex;align-items:center;justify-content:center;margin:4mm 0}.si{width:32px;height:32px;background:${RED};border-radius:50%;display:flex;align-items:center;justify-content:center}.si span{font-family:'Playfair Display',serif;font-size:12px;font-weight:700;color:#fff}.pb{margin-bottom:12px;padding:10px 24px;background:${NAVY};color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}</style></head><body><button class="pb np" onclick="window.print()">🖨️ Print / Save as PDF</button><div class="cert"><div class="fr"></div><div class="ct"><div class="lg"><span>B</span></div><div class="og">Private Boston Guides</div><div class="tt">Certificate of Completion</div><div class="sb">This certificate is awarded to</div><div class="nm">${user.name}</div><div class="cn">${cn}</div><div class="sc">Score: ${cert.score}%</div><br><div class="mt">${cert.certId} · ${new Date(cert.date).toLocaleDateString()}</div><div class="sl"><div class="si"><span>PBG</span></div></div></div></div></body></html>`;
+    window.open(URL.createObjectURL(new Blob([h],{type:"text/html"})),"_blank");
+  };
+  return <div>
+    <h1 style={h1s}>{t.certificates}</h1><p style={sub}>{my.length} {t.certificates.toLowerCase()}</p>
+    {!my.length&&<div style={{...card,textAlign:"center",padding:40,marginTop:16}}><div style={{fontSize:48}}>🏆</div><p style={{...sub,marginTop:8}}>{t.no_cert}</p></div>}
+    {my.map(cert=>{
+      const c=store.courses.find(c=>c.id===cert.courseId);const iss=cert.status==="issued";
+      return <div key={cert.id} style={{...card,borderLeft:`4px solid ${iss?"#2e7d32":"#f59e0b"}`}}>
+        <span style={badge(iss?"#e8f5e9":"#fef3c7",iss?"#2e7d32":"#92400e")}>{iss?"✓ "+t.issued:"⏳ "+t.pending}</span>
+        <h3 style={{...h2s,fontSize:15,marginTop:6}}>{loc(c?.title,lang)}</h3>
+        <p style={{...sub,marginTop:2}}>{t.score}: {cert.score}% · {cert.certId}</p>
+        {iss&&<button onClick={()=>dl(cert)} style={{...btn(true,true),marginTop:12}}>📄 {t.download}</button>}
+      </div>;
+    })}
+  </div>;
+}
+
+// ═══ Admin ═══
+function Admin({store,setStore,t,lang,go}) {
+  const [tab,setTab]=useState("stats");
+  const tabs=[{k:"stats",i:"📊",l:t.stats},{k:"content",i:"📚",l:t.content},{k:"guides",i:"👥",l:t.guides},{k:"certs",i:"🏆",l:t.certificates},{k:"notifs",i:"🔔",l:t.notif}];
+  const guides=store.users.filter(u=>u.role!=="admin");const pub=store.courses.filter(c=>c.status==="published");
+  const iC=store.certificates.filter(c=>c.status==="issued");const pC=store.certificates.filter(c=>c.status==="pending");
+
+  return <div>
+    <h1 style={h1s}>⚙️ {t.admin}</h1>
+    <div style={{display:"flex",gap:6,marginTop:10,marginBottom:16,overflowX:"auto",WebkitOverflowScrolling:"touch",paddingBottom:4}}>
+      {tabs.map(tb=><button key={tb.k} onClick={()=>setTab(tb.k)} style={{...btn(tab===tb.k),padding:"10px 16px",fontSize:13,borderRadius:12,whiteSpace:"nowrap",minHeight:42,flexShrink:0}}>{tb.i} {tb.l}</button>)}
+    </div>
+
+    {tab==="stats"&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+      {[{l:t.guides+" "+t.total,v:guides.length,i:"👥"},{l:t.courses,v:pub.length,i:"📚"},{l:t.certificates+" "+t.issued,v:iC.length,i:"🏆"},{l:t.pending,v:pC.length,i:"⏳"}].map((s,i)=>
+        <div key={i} style={card}><div style={{fontSize:24}}>{s.i}</div><div style={{fontSize:10,textTransform:"uppercase",letterSpacing:1,color:"rgba(27,31,94,0.3)",fontWeight:700,marginTop:2}}>{s.l}</div><div style={{fontFamily:"'Playfair Display',serif",fontSize:24,fontWeight:700}}>{s.v}</div></div>
+      )}
+    </div>}
+
+    {tab==="content"&&<AdminContent store={store} setStore={setStore} t={t} lang={lang}/>}
+
+    {tab==="guides"&&<div>{!guides.length?<p style={sub}>No guides</p>:guides.map(g=>{
+      const mp=Object.entries(store.progress).filter(([k,v])=>k.startsWith(g.id+"-")&&v.completed);
+      const sc=mp.filter(([,v])=>v.score).map(([,v])=>v.score);const avg=sc.length?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):0;
+      return <div key={g.id} style={{...card,display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+        <div style={{width:36,height:36,borderRadius:"50%",background:"rgba(27,31,94,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:14,flexShrink:0}}>{g.name?.charAt(0)?.toUpperCase()}</div>
+        <div style={{flex:1,minWidth:120}}><div style={{fontWeight:600,fontSize:14}}>{g.name}</div><div style={{fontSize:11,color:"rgba(27,31,94,0.35)"}}>{g.email}</div></div>
+        <span style={badge("rgba(27,31,94,0.06)",NAVY)}>{g.role}</span>
+        <span style={{fontSize:12,color:"rgba(27,31,94,0.4)"}}>{mp.length}✓</span>
+        <span style={{fontSize:12,color:avg>=70?"#2e7d32":"rgba(27,31,94,0.4)"}}>{avg>0?avg+"%":"—"}</span>
+      </div>;
+    })}</div>}
+
+    {tab==="certs"&&<div>
+      {pC.length>0&&<button onClick={()=>setStore(s=>({...s,certificates:s.certificates.map(c=>c.status==="pending"?{...c,status:"issued"}:c)}))} style={{...btn(false),background:"#e8f5e9",color:"#2e7d32",marginBottom:12,width:"100%"}}>✓ {t.approve_all} ({pC.length})</button>}
+      {!store.certificates.length?<p style={sub}>{t.no_cert}</p>:store.certificates.map(cert=>{
+        const g=store.users.find(u=>u.id===cert.userId);const c=store.courses.find(c=>c.id===cert.courseId);
+        return <div key={cert.id} style={{...card,borderLeft:`4px solid ${cert.status==="issued"?"#2e7d32":"#f59e0b"}`}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+            <div style={{flex:1,minWidth:120}}><div style={{fontWeight:600,fontSize:14}}>{g?.name}</div><div style={{fontSize:11,color:"rgba(27,31,94,0.35)"}}>{loc(c?.title,lang)} · {cert.score}%</div></div>
+            <span style={badge(cert.status==="issued"?"#e8f5e9":"#fef3c7",cert.status==="issued"?"#2e7d32":"#92400e")}>{cert.status==="issued"?"✓":"⏳"}</span>
+            {cert.status==="pending"&&<button onClick={()=>setStore(s=>({...s,certificates:s.certificates.map(c=>c.id===cert.id?{...c,status:"issued"}:c)}))} style={{...btn(false),background:"#e8f5e9",color:"#2e7d32",padding:"10px 16px",fontSize:13}}>✓</button>}
+          </div>
+        </div>;
+      })}
+    </div>}
+
+    {tab==="notifs"&&<AdminNotifs store={store} setStore={setStore} t={t}/>}
+  </div>;
+}
+
+// ═══ Admin Content ═══
+function AdminContent({store,setStore,t,lang}) {
+  const [show,setShow]=useState(false);const [ti,setTi]=useState({en:"",es:"",ca:"",tr:""});const [cat,setCat]=useState("general");
+  const [am,setAm]=useState(null);const [mt,setMt]=useState({en:"",es:"",ca:"",tr:""});const [mtp,setMtp]=useState("doc");const [mc,setMc]=useState({en:"",es:"",ca:"",tr:""});
+
+  return <div>
+    <button onClick={()=>setShow(!show)} style={{...btn(!show),width:"100%",marginBottom:12}}>{show?t.cancel:"+ "+t.add_course}</button>
+    {show&&<div style={{...card,marginBottom:12}}>
+      {Object.keys(FL).map(l=><div key={l} style={{marginBottom:6}}><label style={lbl}>{t.title} ({LN[l]})</label><input style={inp} value={ti[l]} onChange={e=>setTi(p=>({...p,[l]:e.target.value}))} placeholder={l==="en"?"Required":"Optional"}/></div>)}
+      <label style={lbl}>Category</label>
+      <select style={{...inp,marginBottom:8}} value={cat} onChange={e=>setCat(e.target.value)}>{["general","tourism","museum","safety","heritage"].map(c=><option key={c}>{c}</option>)}</select>
+      <button onClick={()=>{if(!ti.en)return;setStore(s=>({...s,courses:[...s.courses,{id:uid(),title:{...ti},desc:{en:"",es:"",ca:"",tr:""},category:cat,status:"published",created:now(),modules:[]}]}));setTi({en:"",es:"",ca:"",tr:""});setShow(false);}} style={btn(true,true)}>✓ {t.add_course}</button>
+    </div>}
+
+    {store.courses.map(c=><div key={c.id} style={{...card}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"start",gap:8}}>
+        <div style={{flex:1,minWidth:0}}><span style={badge("rgba(27,31,94,0.06)",NAVY)}>{c.category}</span><h3 style={{...h2s,fontSize:14,marginTop:4}}>{loc(c.title,lang)}</h3></div>
+        <button onClick={()=>{if(confirm("Delete?"))setStore(s=>({...s,courses:s.courses.filter(x=>x.id!==c.id)}))}} style={{background:"none",border:"none",color:RED,cursor:"pointer",fontSize:16,minHeight:36,padding:"4px 8px"}}>🗑</button>
+      </div>
+      {(c.modules||[]).map(m=><div key={m.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:10,background:"rgba(27,31,94,0.02)",marginTop:6}}>
+        <span style={{fontSize:13}}>{m.type==="quiz"?"📝":"📄"}</span>
+        <span style={{flex:1,fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{loc(m.title,lang)}</span>
+        {m.type==="quiz"&&<span style={{fontSize:11,color:"rgba(27,31,94,0.3)"}}>{(m.questions||[]).length}Q</span>}
+        {m.type==="quiz"&&<button onClick={()=>{
+          const qt=prompt("Question (EN):"); if(!qt)return;
+          const os=[];for(let i=0;i<4;i++){const t=prompt("Option "+String.fromCharCode(65+i)+":");if(!t)return;os.push({text:{en:t,es:t,ca:t,tr:t},correct:false});}
+          const ci=parseInt(prompt("Correct? (1-4):")||"1")-1;os.forEach((o,i)=>o.correct=i===ci);
+          setStore(s=>({...s,courses:s.courses.map(x=>x.id===c.id?{...x,modules:x.modules.map(mm=>mm.id===m.id?{...mm,questions:[...(mm.questions||[]),{id:uid(),q:{en:qt,es:qt,ca:qt,tr:qt},opts:os}]}:mm)}:x)}));
+        }} style={{...btn(false),padding:"4px 10px",fontSize:11,minHeight:28}}>+Q</button>}
+        <button onClick={()=>{if(confirm("Delete?"))setStore(s=>({...s,courses:s.courses.map(x=>x.id===c.id?{...x,modules:x.modules.filter(mm=>mm.id!==m.id)}:x)}))}} style={{background:"none",border:"none",color:RED,cursor:"pointer",fontSize:13,minHeight:28}}>✗</button>
+      </div>)}
+      {am===c.id?<div style={{marginTop:8,padding:12,borderRadius:12,background:"rgba(27,31,94,0.02)"}}>
+        <div style={{display:"flex",gap:6,marginBottom:8}}>{["doc","quiz"].map(tp=><button key={tp} onClick={()=>setMtp(tp)} style={{...btn(mtp===tp),padding:"8px 14px",fontSize:12,borderRadius:10,minHeight:36}}>{tp==="doc"?"📄":"📝"} {tp}</button>)}</div>
+        <input style={{...inp,marginBottom:6}} placeholder="Title (EN)*" value={mt.en} onChange={e=>setMt(p=>({...p,en:e.target.value}))}/>
+        {mtp==="doc"&&<textarea style={{...inp,minHeight:80,marginBottom:6}} placeholder="Content (EN)" value={mc.en} onChange={e=>setMc(p=>({...p,en:e.target.value}))}/>}
+        <div style={{display:"flex",gap:6}}>
+          <button onClick={()=>{if(!mt.en)return;const m={id:uid(),title:{...mt},type:mtp,content:mtp==="doc"?{...mc}:undefined,order:99,duration:15,questions:mtp==="quiz"?[]:undefined};setStore(s=>({...s,courses:s.courses.map(x=>x.id===c.id?{...x,modules:[...(x.modules||[]),m]}:x)}));setMt({en:"",es:"",ca:"",tr:""});setMc({en:"",es:"",ca:"",tr:""});setAm(null);}} style={btn(true)}>✓</button>
+          <button onClick={()=>setAm(null)} style={btn(false)}>{t.cancel}</button>
+        </div>
+      </div>:<button onClick={()=>setAm(c.id)} style={{...btn(false),marginTop:8,width:"100%",fontSize:12}}>+ {t.add_module}</button>}
+    </div>)}
+  </div>;
+}
+
+// ═══ Admin Notifs ═══
+function AdminNotifs({store,setStore,t}) {
+  const [ti,setTi]=useState("");const [bd,setBd]=useState("");const [seg,setSeg]=useState("all");const [ok,setOk]=useState(false);
+  const segs=[{v:"all",l:"All"},{v:"tourist",l:"🗺️ Tourist"},{v:"museum",l:"🏛️ Museum"},{v:"nature",l:"🌿 Nature"}];
+  return <div>
+    {ok&&<div style={{...card,background:"#e8f5e9",color:"#2e7d32",fontWeight:700,fontSize:14}}>✓ Sent!</div>}
+    <div style={card}>
+      <label style={lbl}>{t.title}</label><input style={{...inp,marginBottom:10}} value={ti} onChange={e=>setTi(e.target.value)}/>
+      <label style={lbl}>{t.desc}</label><textarea style={{...inp,minHeight:70,marginBottom:10}} value={bd} onChange={e=>setBd(e.target.value)}/>
+      <label style={lbl}>Segment</label>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:12}}>
+        {segs.map(s=><button key={s.v} onClick={()=>setSeg(s.v)} style={{...btn(seg===s.v),padding:10,fontSize:13,borderRadius:12}}>{s.l}</button>)}
+      </div>
+      <button onClick={()=>{if(!ti)return;const gs=store.users.filter(u=>{if(u.role==="admin")return false;return seg==="all"||u.role===seg;});
+        setStore(s=>({...s,notifications:[...(s.notifications||[]),...gs.map(g=>({id:uid(),userId:g.id,title:ti,body:bd,type:"announcement",read:false,date:now()}))]}));
+        setTi("");setBd("");setOk(true);setTimeout(()=>setOk(false),3000);
+      }} disabled={!ti} style={{...btn(true,true),opacity:ti?1:.4}}>📨 {t.send}</button>
+    </div>
+  </div>;
+}
+
+// Render
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>
